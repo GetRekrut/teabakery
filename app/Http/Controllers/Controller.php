@@ -6,10 +6,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use function Couchbase\defaultDecoder;
 
 class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     public function init()
     {
@@ -19,17 +19,29 @@ class Controller extends BaseController
             'client_secret' => env('AMO_CLIENT_SECRET'),
             'redirect_uri' => env('AMO_REDIRECT_URI'),
         ]);
+       
+       try {
 
-        try {
-            $ufee = \Ufee\Amo\Oauthapi::getInstance(env('AMO_CLIENT_ID'));
+        	$ufee = \Ufee\Amo\Oauthapi::getInstance(env('AMO_CLIENT_ID'));
+          	$ufee->account->toArray();
 
-            $ufee->account->toArray();
+       } catch (\Exception $exception) {
 
-        } catch (\Exception $exception) {
+           $ufee->fetchAccessToken(env('AMO_CODE')); // закомментить после авторизации
 
-            $ufee->fetchAccessToken(env('AMO_CODE'));
-        }
+       }
+       return $ufee;
+    }
 
-        return $ufee;
+    public function test () {
+
+        $ufee = $this->init();
+
+        $ufee = $this->init();
+        $contacts = $ufee->contacts()
+            ->searchByPhone(89104296623);
+
+        dd($$contacts);
+
     }
 }

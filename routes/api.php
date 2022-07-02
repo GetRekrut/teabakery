@@ -20,8 +20,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/test', [Controller::class, 'Test']);
+Route::get('/test', [Controller::class, 'test']);
 
 Route::get('/cron', [HookController::class, 'cron']);
 
-Route::get('/hook', [HookController::class, 'hook']);
+Route::post('/hook', [HookController::class, 'hook']);
